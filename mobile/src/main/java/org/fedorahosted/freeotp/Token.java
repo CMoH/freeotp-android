@@ -27,6 +27,7 @@ import android.util.Pair;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
+import com.google.zxing.common.StringUtils;
 import org.apache.commons.codec.binary.Base32;
 import org.fedorahosted.freeotp.utils.Time;
 
@@ -106,6 +107,9 @@ public class Token {
 
     @SerializedName("counter")
     private Long mCounter;
+
+    @SerializedName("zauthUrl")
+    private String mZauthUrl;
 
     private class Secret {
         private byte[] secret;
@@ -213,6 +217,8 @@ public class Token {
 
         mImage = null;
         mColor = null;
+
+        mZauthUrl = null;
     }
 
     private Token(Uri uri) throws InvalidUriException {
@@ -292,6 +298,8 @@ public class Token {
         mColor = uri.getQueryParameter("color");
         if (mColor != null && !mColor.matches("^[0-9a-fA-F]{6}$"))
             throw new InvalidColorException();
+
+        mZauthUrl = uri.getQueryParameter("zauthUrl");
     }
 
     private String getAlgorithm() {
@@ -337,6 +345,12 @@ public class Token {
     public boolean getLock() {
         return mLock == null ? false : mLock;
     }
+
+    public boolean isZauthEnabled() {
+        return mZauthUrl != null && !mZauthUrl.isBlank();
+    }
+
+    public String getZauthUrl() { return mZauthUrl; }
 
     public Code getCode(Key key) throws InvalidKeyException {
         Mac mac;
@@ -409,6 +423,9 @@ public class Token {
 
         if (mType == Type.HOTP)
             ub.appendQueryParameter("counter", Long.toString(mCounter));
+
+        if (isZauthEnabled())
+            ub.appendQueryParameter("zauthUrl", mZauthUrl);
 
         return ub.build();
     }

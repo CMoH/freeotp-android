@@ -1,5 +1,6 @@
 package org.fedorahosted.freeotp;
 
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -9,13 +10,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.fedorahosted.freeotp.main.Activity;
@@ -32,6 +26,7 @@ public class ManualAdd extends AppCompatActivity {
     TextView mAlgorithm;
     Spinner mIntervalSpinner;
     TextView mInterval;
+    TextView mZauthUrl;
 
     /* Initialize UI views */
     private void initViews() {
@@ -62,6 +57,8 @@ public class ManualAdd extends AppCompatActivity {
         mSecret = (EditText) findViewById(R.id.edit_text_secret);
         mTypeGroup = (RadioGroup) findViewById(R.id.radio_grp_type);
         mDigitsGroup = (RadioGroup) findViewById(R.id.radio_grp_digits);
+
+        mZauthUrl = (EditText) findViewById(R.id.edit_text_zauth_url);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +106,10 @@ public class ManualAdd extends AppCompatActivity {
                 .appendQueryParameter("digits", mDigits.getText().toString())
                 .appendQueryParameter("period", mInterval.getText().toString());
 
+        if (!mZauthUrl.getText().toString().isBlank()) {
+            builder.appendQueryParameter("zauthUrl", mZauthUrl.getText().toString());
+        }
+
         if (type.equals("hotp")) {
             builder.appendQueryParameter("counter", "0");
         }
@@ -119,6 +120,7 @@ public class ManualAdd extends AppCompatActivity {
         String secret = mSecret.getText().toString();
         String issuer = mIssuer.getText().toString();
         String account = mAccount.getText().toString();
+        String zauthUrl = mZauthUrl.getText().toString();
         Boolean valid = true;
         String msg = "";
 
@@ -130,6 +132,17 @@ public class ManualAdd extends AppCompatActivity {
         if(issuer.contains(":") || account.contains(":")) {
             msg = "Issuer and account may not contain \":\"";
             valid = false;
+        }
+
+        if (!zauthUrl.isBlank()) {
+            Uri maybeUri = Uri.parse(zauthUrl);
+            if (!maybeUri.getScheme().equals("https")) {
+                msg = "Zauth url is not https";
+                valid = false;
+            } else if (maybeUri.getHost().isEmpty()) {
+                msg = "Zauth url host is empty";
+                valid = false;
+            }
         }
 
         if (!valid) {

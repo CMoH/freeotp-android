@@ -106,6 +106,8 @@
     <string name="manual_button_digits_eight">8</string>
     <string name="manual_algorithm">Algorithm</string>
     <string name="manual_interval">Interval</string>
+    <string name="manual_zauth_url_text">ZAuth URL</string>
+    <string name="manual_zauth_url_hint">https://auth.example.com/api/zauth</string>
     <string name="manual_add_token">Add Token</string>
     <string name="manual_accessibility_algorithm">Token algorithm</string>
     <string name="manual_accessibility_interval">Token Interval</string>
