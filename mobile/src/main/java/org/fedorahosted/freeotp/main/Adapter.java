@@ -65,7 +65,7 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
     private static final String LOGTAG = "Adapter";
     private static final String COMPAT = "tokens";
     private static final String ORDER = "tokenOrder";
-    private static final String NAME  = "tokenStore";
+    private static final String NAME = "tokenStore";
     private static final Gson GSON = new Gson();
 
     private final LongSparseArray<Code> mActive = new LongSparseArray<>();
@@ -84,7 +84,8 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
 
     private void compat(Context context) {
         SharedPreferences sp = context.getSharedPreferences(COMPAT, Context.MODE_PRIVATE);
-        Type type = new TypeToken<LinkedList<String>>(){}.getType();
+        Type type = new TypeToken<LinkedList<String>>() {
+        }.getType();
         List<String> items = GSON.fromJson(sp.getString(ORDER, "[]"), type);
         int size = items.size();
 
@@ -109,8 +110,9 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
 
             if (!sp.edit().putString(ORDER, GSON.toJson(items)).remove(key).commit()) {
                 items.add(i - 1, key);
-                try { delete(0); }
-                catch (GeneralSecurityException | IOException e) {
+                try {
+                    delete(0);
+                } catch (GeneralSecurityException | IOException e) {
                     Log.e(LOGTAG, "Exception", e);
                 }
             }
@@ -128,7 +130,8 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
         mKeyStore = KeyStore.getInstance("AndroidKeyStore");
         mKeyStore.load(null);
 
-        Type type = new TypeToken<LinkedList<String>>(){}.getType();
+        Type type = new TypeToken<LinkedList<String>>() {
+        }.getType();
         String str = mSharedPreferences.getString(ORDER, "[]");
         mItems = GSON.fromJson(str, type);
 
@@ -167,7 +170,7 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
         String uuid = mItems.get(position);
         Token token = Token.deserialize(mSharedPreferences.getString(uuid, null));
         TokenIcon token_icon = new TokenIcon(token, mContext);
-        Pair <Integer, String> image = token_icon.mImage;
+        Pair<Integer, String> image = token_icon.mImage;
         Log.i(LOGTAG, String.format("Bind to view token [%s][%s]", token.getIssuer(), token.getLabel()));
         holder.bind(token, token_icon.mColor, image.first, image.second,
                 mActive.get(getItemId(position)), isSelected(position), token.getType());
@@ -193,10 +196,10 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
         Log.i(LOGTAG, String.format("Adding token uuid [%s]", uuid));
         // Save key.
         mKeyStore.setEntry(uuid, new KeyStore.SecretKeyEntry(key),
-            new KeyProtection.Builder(KeyProperties.PURPOSE_SIGN)
-                .setUserAuthenticationValidityDurationSeconds(token.getPeriod())
-                .setUserAuthenticationRequired(token.getLock() && lock)
-                .build());
+                new KeyProtection.Builder(KeyProperties.PURPOSE_SIGN)
+                        .setUserAuthenticationValidityDurationSeconds(token.getPeriod())
+                        .setUserAuthenticationRequired(token.getLock() && lock)
+                        .build());
 
         // Save everything else.
         mItems.add(uuid);
@@ -223,6 +226,13 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
 
     public int add(SecretKey key, Token token) throws GeneralSecurityException, IOException {
         return add(key, token, true, null);
+    }
+
+    public void delete(String uuid) throws GeneralSecurityException, IOException {
+        int position = mItems.indexOf(uuid);
+        if (position >= 0) {
+            delete(position);
+        }
     }
 
     public void delete(int position) throws GeneralSecurityException, IOException {
@@ -278,6 +288,23 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
         }
     }
 
+    public Code getCode(String uuid)
+            throws UserNotAuthenticatedException, KeyPermanentlyInvalidatedException {
+        try {
+            Token token = Token.deserialize(mSharedPreferences.getString(uuid, null));
+            Key key = mKeyStore.getKey(uuid, null);
+            Code code = token.getCode(key);
+            mSharedPreferences.edit().putString(uuid, token.serialize()).apply();
+            return code;
+        } catch (UserNotAuthenticatedException | KeyPermanentlyInvalidatedException e) {
+            Log.e(LOGTAG, "Exception", e);
+            throw e;
+        } catch (GeneralSecurityException e) {
+            Log.e(LOGTAG, "Exception", e);
+            return new Code("ERROR", 15);
+        }
+    }
+
     public Code getCode(int position)
             throws UserNotAuthenticatedException, KeyPermanentlyInvalidatedException {
         String uuid = mItems.get(position);
@@ -320,11 +347,21 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
 
     public Pair<String, String> getLabel(int position) {
         String uuid = mItems.get(position);
-        Token token = Token.deserialize(mSharedPreferences.getString(uuid, null));
-
-        Pair<String, String> label = new Pair<String, String>(token.getLabel(), token.getIssuer());
-        return label;
+        return getLabel(uuid);
     }
+
+    public Pair<String, String> getLabel(String uuid) {
+        Token token = Token.deserialize(mSharedPreferences.getString(uuid, null));
+        return new Pair<>(token.getLabel(), token.getIssuer());
+    }
+
+    public String getZauthUrl(String uuid)
+            throws UserNotAuthenticatedException, KeyPermanentlyInvalidatedException {
+        Token token = Token.deserialize(mSharedPreferences.getString(uuid, null));
+        return token.getZauthUrl();
+    }
+
+
     public TokenIcon getTokenIcon(int position) {
         String uuid = mItems.get(position);
         Token token = Token.deserialize(mSharedPreferences.getString(uuid, null));
@@ -360,6 +397,7 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
             }
         }
     }
+
     @Override
     public void onActivated(ViewHolder holder) {
     }

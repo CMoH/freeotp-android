@@ -72,6 +72,26 @@
     <string name="main_restore_proceed">Proceed without Restoring</string>
     <string name="main_restore_go_back">Go Back</string>
 
+    <!-- Strings for notifications and notification channels -->
+    <string name="zauth_channel_important_name">Zauth important</string>
+    <string name="zauth_channel_important_description">Zauth events that require the user assistance</string>
+    <string name="zauth_channel_info_name">Zauth informative</string>
+    <string name="zauth_channel_info_description">Informative Zauth events</string>
+
+    <string name="zauth_notification_auth_needed_title">FreeOTP Zauth - Authentication required</string>
+    <string name="zauth_notification_auth_needed_message">Please verify your identity to respond to a Zauth authentication request for %1$s</string>
+    <string name="zauth_notification_invalidated_title">FreeOTP - Key invalidated!</string>
+    <string name="zauth_notification_invalidated_message">The key for token %1$s has been invalidated by the Android Key Store. This may have been due to a change in your lock screen settings. The token has been removed. Please contact your token provider.</string>
+    <string name="zauth_notification_invalid_token_title">FreeOTP Zauth - invalid token</string>
+    <string name="zauth_notification_invalid_token_message">A Zauth request was received for token %1$s, but that token does not allow Zauth</string>
+    <string name="zauth_notification_failed_title">FreeOTP Zauth - network failure!</string>
+    <string name="zauth_notification_failed_message">The Zauth server for %1$s could not be contacted. You might need to go online, check the Zauth Token and/or the respective IdP server configuration. Error details: %2$s</string>
+    <string name="zauth_notification_failed_message_http">The Zauth server for %1$s responded with HTTP %2$d. Check the Zauth Token and/or the respective IdP server configuration.</string>
+    <string name="zauth_notification_invalid_url_title">FreeOTP Zauth - token error!</string>
+    <string name="zauth_notification_invalid_url_message">The Zauth URL for token %1$s is invalid.</string>
+    <string name="zauth_notification_success">FreeOTP Zauth</string>
+    <string name="zauth_notification_success_message">Zauth success for %s</string>
+
     <!-- Strings for the password activity. -->
     <string name="password">Password</string>
     <string name="password_confirm">Confirm Password</string>
