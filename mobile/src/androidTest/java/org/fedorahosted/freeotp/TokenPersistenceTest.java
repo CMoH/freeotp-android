@@ -2,6 +2,7 @@ package org.fedorahosted.freeotp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.os.Looper;
 import androidx.test.runner.AndroidJUnit4;
 import android.util.Pair;
@@ -79,7 +80,7 @@ public class TokenPersistenceTest implements SelectableAdapter.EventListener {
         tokenStore.edit().clear().commit();
         assertEquals(0, tokenStore.getAll().size());
 
-        Adapter a = new Adapter(mContext, this);
+        Adapter a = new Adapter(mContext, this, new Handler());
         assertEquals(0, a.getItemCount());
         a.restoreTokens(pwd);
 
@@ -119,7 +120,7 @@ public class TokenPersistenceTest implements SelectableAdapter.EventListener {
         String pwd = "MyM4sterPassw0rd";
 
         tokenBackup.provision(pwd);
-        Adapter a = new Adapter(mContext, this);
+        Adapter a = new Adapter(mContext, this, new Handler());
 
         for (Map.Entry<String, String> entry : uris.entrySet()) {
             Pair<SecretKey, Token> pair = Token.parse(entry.getValue());
@@ -172,7 +173,7 @@ public class TokenPersistenceTest implements SelectableAdapter.EventListener {
         String newPwd = "redhat";
 
         tokenBackup.provision(origPwd);
-        Adapter a = new Adapter(mContext, this);
+        Adapter a = new Adapter(mContext, this, new Handler());
 
         for (Map.Entry<String, String> entry : uris.entrySet()) {
             Pair<SecretKey, Token> pair = Token.parse(entry.getValue());
@@ -227,7 +228,7 @@ public class TokenPersistenceTest implements SelectableAdapter.EventListener {
 
         setup(old);
         tokenBackup.provision(pwd);
-        Adapter a = new Adapter(mContext, this);
+        Adapter a = new Adapter(mContext, this, new Handler());
 
         Adapter a2 = wipeAndRestore(cur);
 

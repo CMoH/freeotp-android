@@ -2,6 +2,7 @@ package org.fedorahosted.freeotp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.util.Pair;
@@ -94,7 +95,7 @@ public class TokenAdapterTest extends TestCase implements SelectableAdapter.Even
         mockContext.getSharedPreferences("tokenStore", Context.MODE_PRIVATE)
                 .edit().putString("tokenOrder", array.toString()).commit();
 
-        return new Pair<>(ks, new Adapter(mockContext, this));
+        return new Pair<>(ks, new Adapter(mockContext, this, new Handler()));
     }
 
     @Test

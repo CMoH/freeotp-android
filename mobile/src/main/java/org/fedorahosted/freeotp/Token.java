@@ -111,6 +111,10 @@ public class Token {
     @SerializedName("zauthUrl")
     private String mZauthUrl;
 
+    @SerializedName("zauthCorrelationId")
+    private String mZauthCorrelationId;
+
+
     private class Secret {
         private byte[] secret;
     }
@@ -219,6 +223,7 @@ public class Token {
         mColor = null;
 
         mZauthUrl = null;
+        mZauthCorrelationId = null;
     }
 
     private Token(Uri uri) throws InvalidUriException {
@@ -300,6 +305,7 @@ public class Token {
             throw new InvalidColorException();
 
         mZauthUrl = uri.getQueryParameter("zauthUrl");
+        mZauthCorrelationId = uri.getQueryParameter("correlationId");
     }
 
     private String getAlgorithm() {
@@ -351,6 +357,14 @@ public class Token {
     }
 
     public String getZauthUrl() { return mZauthUrl; }
+
+    public String getZauthCorrelationId() {
+        return mZauthCorrelationId;
+    }
+
+    public void clearZauthCorrelationId() {
+        mZauthCorrelationId = null;
+    }
 
     public Code getCode(Key key) throws InvalidKeyException {
         Mac mac;

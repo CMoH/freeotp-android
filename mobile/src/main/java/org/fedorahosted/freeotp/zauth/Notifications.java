@@ -6,14 +6,12 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.provider.Settings;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 import org.fedorahosted.freeotp.R;
 
 import java.util.List;
 
-import static android.provider.Settings.System.getString;
 import static androidx.core.content.ContextCompat.getSystemService;
 
 public class Notifications {

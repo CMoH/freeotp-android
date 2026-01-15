@@ -91,6 +91,10 @@
     <string name="zauth_notification_invalid_url_message">The Zauth URL for token %1$s is invalid.</string>
     <string name="zauth_notification_success">FreeOTP Zauth</string>
     <string name="zauth_notification_success_message">Zauth success for %s</string>
+    <string name="zauth_notification_registration_success_message">Zauth device registration success for %s</string>
+    <string name="zauth_notification_registration_failed_title">FreeOTP Zauth - device registration failed!</string>
+    <string name="zauth_notification_registration_failed_message">The Zauth server for %1$s could not be contacted! Please contact the IdP server administrator, or retry the procedure. Error details: %2$s</string>
+    <string name="zauth_notification_registration_failed_message_http">The Zauth server for %1$s refused device registration (HTTP code %2$d). Please contact the IdP server administrator, or retry the procedure.</string>
 
     <!-- Strings for the password activity. -->
     <string name="password">Password</string>

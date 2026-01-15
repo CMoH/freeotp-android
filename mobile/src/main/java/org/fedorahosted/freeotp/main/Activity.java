@@ -34,6 +34,7 @@ import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.UserNotAuthenticatedException;
 import android.text.InputType;
@@ -84,6 +85,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import org.fedorahosted.freeotp.zauth.FirebaseService;
 
 public class Activity extends AppCompatActivity
     implements SelectableAdapter.EventListener, View.OnClickListener, View.OnLongClickListener {
@@ -254,7 +256,7 @@ public class Activity extends AppCompatActivity
         mEmpty = findViewById(android.R.id.empty);
 
         try {
-            mTokenAdapter = new Adapter(getApplicationContext(), this) {
+            mTokenAdapter = new Adapter(getApplicationContext(), this, new Handler()) {
                 @Override
                 public void onActivated(ViewHolder holder) {
                     Activity.this.onActivate(holder);
@@ -344,6 +346,8 @@ public class Activity extends AppCompatActivity
 
         onNewIntent(getIntent());
 
+        Log.i(LOGTAG, "Refreshing Firebase device token");
+        FirebaseService.refreshDeviceToken();
 
     }
 

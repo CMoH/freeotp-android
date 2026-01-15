@@ -3,6 +3,7 @@ package org.fedorahosted.freeotp.zauth;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.*;
+import android.net.Uri;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.UserNotAuthenticatedException;
 import android.util.Log;
@@ -15,7 +16,6 @@ import kotlin.coroutines.Continuation;
 import okhttp3.*;
 import org.fedorahosted.freeotp.Code;
 import org.fedorahosted.freeotp.R;
-import org.fedorahosted.freeotp.TokenPersistence;
 import org.fedorahosted.freeotp.main.Activity;
 import org.fedorahosted.freeotp.main.Adapter;
 import org.fedorahosted.freeotp.utils.SelectableAdapter;
@@ -23,37 +23,41 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.security.KeyStore;
 import java.util.NavigableSet;
 
-public class ZauthWorker extends CoroutineWorker implements SelectableAdapter.EventListener {
+public class ZauthChallengeWorker extends CoroutineWorker implements SelectableAdapter.EventListener {
 
-    private static final String LOGTAG = "ZauthWorker";
+    public static final String SERVER_CODE = "server_code";
+    public static final String CORRELATION_ID = "correlation_id";
+
+    private static final String LOGTAG = "ZauthChallengeWorker";
 
     private final Adapter mTokenAdapter;
 
-    public ZauthWorker(@NotNull Context appContext, @NotNull WorkerParameters params) throws GeneralSecurityException, IOException {
+    public ZauthChallengeWorker(@NotNull Context appContext, @NotNull WorkerParameters params) throws GeneralSecurityException, IOException {
         super(appContext, params);
-        mTokenAdapter = new Adapter(appContext, this);
+        mTokenAdapter = new Adapter(appContext, this, null);
     }
 
     @Override
     public @Nullable Object doWork(@NotNull Continuation<? super Result> continuation) {
-        String zauthServerCode = getInputData().getString("server_code");
+        String zauthServerCode = getInputData().getString(SERVER_CODE);
         if (zauthServerCode == null) {
+            return Result.failure();
+        }
+        String zauthCorrelationId = getInputData().getString(CORRELATION_ID);
+        if (zauthCorrelationId == null) {
             return Result.failure();
         }
 
         Context appContext = getApplicationContext();
-        processCode(appContext, zauthServerCode);
+        processCode(appContext, zauthServerCode, zauthCorrelationId);
         return Result.success();
     }
 
 
-    private void processCode(Context context, String zauthServerCode) {
+    private void processCode(Context context, String zauthServerCode, String zauthCorrelationId) {
         String label = "unknown";
         try {
             String zauthUrl = mTokenAdapter.getZauthUrl(zauthServerCode);
@@ -64,10 +68,15 @@ public class ZauthWorker extends CoroutineWorker implements SelectableAdapter.Ev
                 return; // zauth disabled
             }
 
+            Uri uri = Uri.parse(zauthUrl).buildUpon()
+                    .appendPath("verify")
+                    .appendQueryParameter("correlationId", zauthCorrelationId)
+                    .build();
+
             Pair<String, String> labelIssuer = mTokenAdapter.getLabel(zauthServerCode);
             label = labelIssuer.first;
             Code code = mTokenAdapter.getCode(zauthServerCode);
-            postZauthCode(context, zauthServerCode, new URL(zauthUrl), label, code);
+            postZauthCode(context, zauthServerCode, uri, label, code);
 
             notifyInfo(context, zauthServerCode,
                     context.getString(R.string.zauth_notification_success),
@@ -98,22 +107,21 @@ public class ZauthWorker extends CoroutineWorker implements SelectableAdapter.Ev
             notifyUrgent(context, zauthServerCode,
                     context.getString(R.string.zauth_notification_invalidated_title),
                     context.getString(R.string.zauth_notification_invalidated_message, label));
-        } catch (MalformedURLException e) {
-            Log.e(LOGTAG, "Exception", e);
-            notifyUrgent(context, zauthServerCode,
-                    context.getString(R.string.zauth_notification_invalid_url_title),
-                    context.getString(R.string.zauth_notification_invalid_url_message, label));
         }
     }
 
-    private void postZauthCode(Context context, String zauthServerCode, URL zauthUrl, String label, Code code) {
+    private void postZauthCode(Context context, String zauthServerCode, Uri zauthUrl, String label, Code code) {
         Log.i(LOGTAG, String.format("postZauthCode[%s]: sending code %s to %s", label, code.getCode(), zauthUrl));
 
+        ZauthChallengeResponse payload = new ZauthChallengeResponse();
+        payload.setOtpCode(code.getCode());
+        // TODO: signature
+
         Gson gson = new Gson();
-        String json = gson.toJson(code.getCode(), String.class); // TODO: add more info, like device ID or time validity maybe
+        String json = gson.toJson(payload, ZauthChallengeResponse.class);
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(zauthUrl)
+                .url(zauthUrl.toString())
                 .post(RequestBody.create(json, MediaType.parse("application/json")))
                 .build();
         try (Response response = okHttpClient.newCall(request).execute()) {

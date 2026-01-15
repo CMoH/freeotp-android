@@ -3,6 +3,7 @@ package org.fedorahosted.freeotp;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.Looper;
 import android.security.keystore.UserNotAuthenticatedException;
 import android.util.Pair;
@@ -231,7 +232,7 @@ public class TokenCompatTest extends TestCase implements SelectableAdapter.Event
             .putString("foo", makeUri().toString())
             .commit();
 
-        Adapter a = new Adapter(mContext, this);
+        Adapter a = new Adapter(mContext, this, new Handler());
 
         // Ensure the migration happened.
         assertEquals(0, old.getAll().size());
@@ -273,7 +274,7 @@ public class TokenCompatTest extends TestCase implements SelectableAdapter.Event
             .putString("foo", makeJson().toString())
             .commit();
 
-        Adapter a = new Adapter(mContext, this);
+        Adapter a = new Adapter(mContext, this, new Handler());
 
         // Ensure the migration happened.
         assertEquals(0, old.getAll().size());
@@ -322,7 +323,7 @@ public class TokenCompatTest extends TestCase implements SelectableAdapter.Event
                 .commit();
 
         tokenBackup.provision(pwd);
-        Adapter a = new Adapter(mContext, this);
+        Adapter a = new Adapter(mContext, this, new Handler());
 
         // Backup stores masterKey and token data
         assertEquals(3, bkp.getAll().size());
@@ -335,7 +336,7 @@ public class TokenCompatTest extends TestCase implements SelectableAdapter.Event
         assertEquals(0, cur.getAll().size());
 
         // Perform restore
-        Adapter a2 = new Adapter(mContext, this);
+        Adapter a2 = new Adapter(mContext, this, new Handler());
         a2.restoreTokens(pwd);
 
         // Make sure tokenOrder is well formed.

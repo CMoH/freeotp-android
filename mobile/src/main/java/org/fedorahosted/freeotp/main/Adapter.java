@@ -37,6 +37,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -48,6 +51,7 @@ import org.fedorahosted.freeotp.TokenPersistence;
 import org.fedorahosted.freeotp.encryptor.EncryptedKey;
 import org.fedorahosted.freeotp.encryptor.Encryptor;
 import org.fedorahosted.freeotp.utils.SelectableAdapter;
+import org.fedorahosted.freeotp.zauth.ZauthRegistrationWorker;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -69,7 +73,7 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
     private static final Gson GSON = new Gson();
 
     private final LongSparseArray<Code> mActive = new LongSparseArray<>();
-    private final Handler mHandler = new Handler();
+    private final Handler mHandler;
     private final Encryptor mEncryptor;
     private TokenPersistence mTokenBackup;
 
@@ -122,9 +126,10 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
             sp.edit().remove(ORDER).apply();
     }
 
-    public Adapter(Context context, EventListener listener) throws GeneralSecurityException, IOException {
+    public Adapter(Context context, EventListener listener, Handler handler) throws GeneralSecurityException, IOException {
         super(listener);
         setHasStableIds(true);
+        mHandler = handler;
 
         mSharedPreferences = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
         mKeyStore = KeyStore.getInstance("AndroidKeyStore");
@@ -201,6 +206,11 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
                         .setUserAuthenticationRequired(token.getLock() && lock)
                         .build());
 
+        String zauthUrl = token.getZauthUrl();
+        String zauthCorrelationId = token.getZauthCorrelationId();
+        // we only need the correlationId for one request. if registration fails, one needs to re-register the device
+        token.clearZauthCorrelationId();
+
         // Save everything else.
         mItems.add(uuid);
         if (!storeItems().putString(uuid, token.serialize()).commit()) {
@@ -217,6 +227,21 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
             } catch (Exception e) {
                 Log.e(LOGTAG, "Exception", e);
             }
+        }
+
+
+        if (zauthUrl != null) {
+            Data inputData = new Data.Builder()
+                    .putString(ZauthRegistrationWorker.CORRELATION_ID, zauthCorrelationId)
+                    .putString(ZauthRegistrationWorker.LABEL, token.getLabel())
+                    .putString(ZauthRegistrationWorker.OTP_CODE, getCode(uuid).getCode())
+                    .putString(ZauthRegistrationWorker.SERVER_CODE, uuid)
+                    .putString(ZauthRegistrationWorker.ZAUTH_URL, zauthUrl)
+                    .build();
+            OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(ZauthRegistrationWorker.class)
+                    .setInputData(inputData)
+                    .build();
+            WorkManager.getInstance(mContext).enqueue(workRequest);
         }
 
         Log.i(LOGTAG, String.format("Token added uuid [%s]", uuid));
@@ -327,18 +352,20 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
         final Long id = getItemId(position);
         mActive.put(id, code);
 
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Code code = mActive.get(id);
-                if (code == null)
-                    return;
-                if (!code.isValid())
-                    mActive.remove(id);
-                else
-                    mHandler.postDelayed(this, code.timeLeft());
-            }
-        }, code.timeLeft());
+        if (mHandler != null) {
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Code code = mActive.get(id);
+                    if (code == null)
+                        return;
+                    if (!code.isValid())
+                        mActive.remove(id);
+                    else
+                        mHandler.postDelayed(this, code.timeLeft());
+                }
+            }, code.timeLeft());
+        }
 
         Log.i(LOGTAG, String.format("getCode: returning code"));
 
@@ -371,6 +398,10 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
 
     public Token.Type getTokenType(int position) {
         String uuid = mItems.get(position);
+        return getTokenType(uuid);
+    }
+
+    public Token.Type getTokenType(String uuid) {
         Token token = Token.deserialize(mSharedPreferences.getString(uuid, null));
 
         return token.getType();
