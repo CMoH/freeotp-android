@@ -1,4 +1,4 @@
-package org.fedorahosted.freeotp.zauth;
+package org.fedorahosted.freeotp.auth41;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -65,10 +65,10 @@ public class FirebaseService extends FirebaseMessagingService {
         }
 
         Data inputData = new Data.Builder()
-                .putString(ZauthChallengeWorker.SERVER_CODE, serverCode)
-                .putString(ZauthChallengeWorker.CORRELATION_ID, correlationId)
+                .putString(Auth41ChallengeWorker.SERVER_CODE, serverCode)
+                .putString(Auth41ChallengeWorker.CORRELATION_ID, correlationId)
                 .build();
-        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(ZauthChallengeWorker.class)
+        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(Auth41ChallengeWorker.class)
                 .setInputData(inputData)
                 .build();
         WorkManager.getInstance(this).enqueue(workRequest);

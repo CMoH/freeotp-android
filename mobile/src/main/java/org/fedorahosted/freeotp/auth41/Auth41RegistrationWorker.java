@@ -1,4 +1,4 @@
-package org.fedorahosted.freeotp.zauth;
+package org.fedorahosted.freeotp.auth41;
 
 import android.app.Notification;
 import android.content.Context;
@@ -20,17 +20,17 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.NavigableSet;
 
-public class ZauthRegistrationWorker extends CoroutineWorker implements SelectableAdapter.EventListener {
+public class Auth41RegistrationWorker extends CoroutineWorker implements SelectableAdapter.EventListener {
 
     public static final String CORRELATION_ID = "correlation_id";
     public static final String LABEL = "label";
     public static final String OTP_CODE = "otp_code";
     public static final String SERVER_CODE = "server_code";
-    public static final String ZAUTH_URL = "zauth_url";
+    public static final String AUTH41_URL = "auth41_url";
 
-    private static final String LOGTAG = "ZauthChallengeWorker";
+    private static final String LOGTAG = "Auth41ChallengeWorker";
 
-    public ZauthRegistrationWorker(@NotNull Context appContext, @NotNull WorkerParameters params) throws GeneralSecurityException, IOException {
+    public Auth41RegistrationWorker(@NotNull Context appContext, @NotNull WorkerParameters params) throws GeneralSecurityException, IOException {
         super(appContext, params);
     }
 
@@ -41,14 +41,14 @@ public class ZauthRegistrationWorker extends CoroutineWorker implements Selectab
         String label = inputData.getString(LABEL);
         String otpCode = inputData.getString(OTP_CODE);
         String serverCode = inputData.getString(SERVER_CODE);
-        String zauthUrl = inputData.getString(ZAUTH_URL);
+        String auth41Url = inputData.getString(AUTH41_URL);
 
-        if (correlationId == null || label == null || otpCode == null || serverCode == null || zauthUrl == null) {
+        if (correlationId == null || label == null || otpCode == null || serverCode == null || auth41Url == null) {
             Log.e(LOGTAG, String.format("postRegistrationRequest[%s]: missing required information to register device", label));
             return Result.failure();
         }
 
-        ZauthDeviceRegistrationRequest request = new ZauthDeviceRegistrationRequest();
+        Auth41DeviceRegistrationRequest request = new Auth41DeviceRegistrationRequest();
         request.setDeviceToken(FirebaseService.getDeviceToken());
         request.setServerCode(serverCode);
         request.setCorrelationId(correlationId);
@@ -56,38 +56,38 @@ public class ZauthRegistrationWorker extends CoroutineWorker implements Selectab
         request.setOtpCode(otpCode);
 
         Context appContext = getApplicationContext();
-        Uri zauthRegisterUrl = Uri.parse(zauthUrl).buildUpon().appendPath("register").build();
-        return postRegistrationRequest(appContext, request, zauthRegisterUrl, label);
+        Uri auth41RegisterUrl = Uri.parse(auth41Url).buildUpon().appendPath("register").build();
+        return postRegistrationRequest(appContext, request, auth41RegisterUrl, label);
     }
 
 
-    private Result postRegistrationRequest(Context context, ZauthDeviceRegistrationRequest registrationRequest, Uri zauthUrl, String label) {
-        Log.i(LOGTAG, String.format("postRegistrationRequest[%s]: sending registration request %s to %s", label, registrationRequest, zauthUrl));
+    private Result postRegistrationRequest(Context context, Auth41DeviceRegistrationRequest registrationRequest, Uri auth41Url, String label) {
+        Log.i(LOGTAG, String.format("postRegistrationRequest[%s]: sending registration request %s to %s", label, registrationRequest, auth41Url));
 
         Gson gson = new Gson();
-        String json = gson.toJson(registrationRequest, ZauthDeviceRegistrationRequest.class);
+        String json = gson.toJson(registrationRequest, Auth41DeviceRegistrationRequest.class);
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(zauthUrl.toString())
+                .url(auth41Url.toString())
                 .post(RequestBody.create(json, MediaType.parse("application/json")))
                 .build();
         try (Response response = okHttpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 notifyInfo(context, registrationRequest.getServerCode(),
-                        context.getString(R.string.zauth_notification_success),
-                        context.getString(R.string.zauth_notification_registration_success_message, label));
+                        context.getString(R.string.auth41_notification_success),
+                        context.getString(R.string.auth41_notification_registration_success_message, label));
                 return Result.success();
             } else {
                 Log.w(LOGTAG, String.format("postRegistrationRequest[%s]: failed with code %d", label, response.code()));
                 notifyUrgent(context, registrationRequest.getServerCode(),
-                        context.getString(R.string.zauth_notification_registration_failed_title),
-                        context.getString(R.string.zauth_notification_registration_failed_message_http, label, response.code()));
+                        context.getString(R.string.auth41_notification_registration_failed_title),
+                        context.getString(R.string.auth41_notification_registration_failed_message_http, label, response.code()));
             }
         } catch (IOException e) {
             Log.w(LOGTAG, String.format("postRegistrationRequest[%s]: exception for item", label), e);
             notifyUrgent(context, registrationRequest.getServerCode(),
-                    context.getString(R.string.zauth_notification_registration_failed_title),
-                    context.getString(R.string.zauth_notification_registration_failed_message, label, e.getLocalizedMessage()));
+                    context.getString(R.string.auth41_notification_registration_failed_title),
+                    context.getString(R.string.auth41_notification_registration_failed_message, label, e.getLocalizedMessage()));
         }
         return Result.failure();
     }
@@ -97,26 +97,26 @@ public class ZauthRegistrationWorker extends CoroutineWorker implements Selectab
         // nothing to do here
     }
 
-    private static void notifyInfo(Context context, String zauthServerCode, String title, String message) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Notifications.ZAUTH_CHANNEL_ID_INFO)
+    private static void notifyInfo(Context context, String auth41ServerCode, String title, String message) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Notifications.AUTH41_CHANNEL_ID_INFO)
                 .setSmallIcon(R.drawable.ic_freeotp)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setCategory(Notification.CATEGORY_STATUS)
                 .setAutoCancel(true);
-        Notifications.show(context, builder.build(), zauthServerCode.hashCode());
+        Notifications.show(context, builder.build(), auth41ServerCode.hashCode());
     }
 
-    private static void notifyUrgent(Context context, String zauthServerCode, String title, String message) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Notifications.ZAUTH_CHANNEL_ID_URGENT)
+    private static void notifyUrgent(Context context, String auth41ServerCode, String title, String message) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Notifications.AUTH41_CHANNEL_ID_URGENT)
                 .setSmallIcon(R.drawable.ic_freeotp)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .setAutoCancel(true);
-        Notifications.show(context, builder.build(), zauthServerCode.hashCode());
+        Notifications.show(context, builder.build(), auth41ServerCode.hashCode());
     }
 
 }

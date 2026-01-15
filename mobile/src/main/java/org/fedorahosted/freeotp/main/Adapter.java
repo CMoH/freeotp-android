@@ -51,7 +51,7 @@ import org.fedorahosted.freeotp.TokenPersistence;
 import org.fedorahosted.freeotp.encryptor.EncryptedKey;
 import org.fedorahosted.freeotp.encryptor.Encryptor;
 import org.fedorahosted.freeotp.utils.SelectableAdapter;
-import org.fedorahosted.freeotp.zauth.ZauthRegistrationWorker;
+import org.fedorahosted.freeotp.auth41.Auth41RegistrationWorker;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -206,10 +206,10 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
                         .setUserAuthenticationRequired(token.getLock() && lock)
                         .build());
 
-        String zauthUrl = token.getZauthUrl();
-        String zauthCorrelationId = token.getZauthCorrelationId();
+        String auth41Url = token.getAuth41Url();
+        String auth41CorrelationId = token.getAuth41CorrelationId();
         // we only need the correlationId for one request. if registration fails, one needs to re-register the device
-        token.clearZauthCorrelationId();
+        token.clearAuth41CorrelationId();
 
         // Save everything else.
         mItems.add(uuid);
@@ -230,15 +230,15 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
         }
 
 
-        if (zauthUrl != null) {
+        if (auth41Url != null) {
             Data inputData = new Data.Builder()
-                    .putString(ZauthRegistrationWorker.CORRELATION_ID, zauthCorrelationId)
-                    .putString(ZauthRegistrationWorker.LABEL, token.getLabel())
-                    .putString(ZauthRegistrationWorker.OTP_CODE, getCode(uuid).getCode())
-                    .putString(ZauthRegistrationWorker.SERVER_CODE, uuid)
-                    .putString(ZauthRegistrationWorker.ZAUTH_URL, zauthUrl)
+                    .putString(Auth41RegistrationWorker.CORRELATION_ID, auth41CorrelationId)
+                    .putString(Auth41RegistrationWorker.LABEL, token.getLabel())
+                    .putString(Auth41RegistrationWorker.OTP_CODE, getCode(uuid).getCode())
+                    .putString(Auth41RegistrationWorker.SERVER_CODE, uuid)
+                    .putString(Auth41RegistrationWorker.AUTH41_URL, auth41Url)
                     .build();
-            OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(ZauthRegistrationWorker.class)
+            OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(Auth41RegistrationWorker.class)
                     .setInputData(inputData)
                     .build();
             WorkManager.getInstance(mContext).enqueue(workRequest);
@@ -382,10 +382,10 @@ public class Adapter extends SelectableAdapter<ViewHolder> implements ViewHolder
         return new Pair<>(token.getLabel(), token.getIssuer());
     }
 
-    public String getZauthUrl(String uuid)
+    public String getAuth41Url(String uuid)
             throws UserNotAuthenticatedException, KeyPermanentlyInvalidatedException {
         Token token = Token.deserialize(mSharedPreferences.getString(uuid, null));
-        return token.getZauthUrl();
+        return token.getAuth41Url();
     }
 
 

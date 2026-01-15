@@ -108,11 +108,11 @@ public class Token {
     @SerializedName("counter")
     private Long mCounter;
 
-    @SerializedName("zauthUrl")
-    private String mZauthUrl;
+    @SerializedName("auth41Url")
+    private String mAuth41Url;
 
-    @SerializedName("zauthCorrelationId")
-    private String mZauthCorrelationId;
+    @SerializedName("auth41CorrelationId")
+    private String mAuth41CorrelationId;
 
 
     private class Secret {
@@ -222,8 +222,8 @@ public class Token {
         mImage = null;
         mColor = null;
 
-        mZauthUrl = null;
-        mZauthCorrelationId = null;
+        mAuth41Url = null;
+        mAuth41CorrelationId = null;
     }
 
     private Token(Uri uri) throws InvalidUriException {
@@ -304,8 +304,8 @@ public class Token {
         if (mColor != null && !mColor.matches("^[0-9a-fA-F]{6}$"))
             throw new InvalidColorException();
 
-        mZauthUrl = uri.getQueryParameter("zauthUrl");
-        mZauthCorrelationId = uri.getQueryParameter("correlationId");
+        mAuth41Url = uri.getQueryParameter("auth41Url");
+        mAuth41CorrelationId = uri.getQueryParameter("correlationId");
     }
 
     private String getAlgorithm() {
@@ -352,18 +352,18 @@ public class Token {
         return mLock == null ? false : mLock;
     }
 
-    public boolean isZauthEnabled() {
-        return mZauthUrl != null && !mZauthUrl.isBlank();
+    public boolean isAuth41Enabled() {
+        return mAuth41Url != null && !mAuth41Url.isBlank();
     }
 
-    public String getZauthUrl() { return mZauthUrl; }
+    public String getAuth41Url() { return mAuth41Url; }
 
-    public String getZauthCorrelationId() {
-        return mZauthCorrelationId;
+    public String getAuth41CorrelationId() {
+        return mAuth41CorrelationId;
     }
 
-    public void clearZauthCorrelationId() {
-        mZauthCorrelationId = null;
+    public void clearAuth41CorrelationId() {
+        mAuth41CorrelationId = null;
     }
 
     public Code getCode(Key key) throws InvalidKeyException {
@@ -438,8 +438,8 @@ public class Token {
         if (mType == Type.HOTP)
             ub.appendQueryParameter("counter", Long.toString(mCounter));
 
-        if (isZauthEnabled())
-            ub.appendQueryParameter("zauthUrl", mZauthUrl);
+        if (isAuth41Enabled())
+            ub.appendQueryParameter("auth41Url", mAuth41Url);
 
         return ub.build();
     }

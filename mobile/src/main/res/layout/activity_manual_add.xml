@@ -209,21 +209,21 @@
                     >
 
                 <TextView
-                        android:id="@+id/text_zauth_url"
+                        android:id="@+id/text_auth41_url"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="@string/manual_zauth_url_text"
+                        android:text="@string/manual_auth41_url_text"
                         android:textSize="18sp"
                         android:textStyle="bold"/>
 
                 <EditText
-                        android:id="@+id/edit_text_zauth_url"
+                        android:id="@+id/edit_text_auth41_url"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:hint="@string/manual_zauth_url_hint"
+                        android:hint="@string/manual_auth41_url_hint"
                         android:inputType="textUri"
                         android:minHeight="48dp"/>
             </LinearLayout>

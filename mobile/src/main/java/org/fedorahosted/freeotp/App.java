@@ -1,7 +1,7 @@
 package org.fedorahosted.freeotp;
 
 import android.app.Application;
-import org.fedorahosted.freeotp.zauth.Notifications;
+import org.fedorahosted.freeotp.auth41.Notifications;
 
 public class App extends Application {
 

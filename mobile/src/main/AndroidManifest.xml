@@ -36,7 +36,8 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_freeotp"
         android:supportsRtl="true"
-        android:theme="@style/FreeOTP.Purple.NoActionBar">
+        android:theme="@style/FreeOTP.Purple.NoActionBar"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".OnBoardingActivity"
             android:exported="false" />
@@ -77,7 +78,7 @@
             </intent-filter>
         </activity>
         <service
-                android:name="org.fedorahosted.freeotp.zauth.FirebaseService"
+                android:name="org.fedorahosted.freeotp.auth41.FirebaseService"
                 android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

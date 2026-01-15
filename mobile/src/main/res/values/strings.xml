@@ -73,28 +73,28 @@
     <string name="main_restore_go_back">Go Back</string>
 
     <!-- Strings for notifications and notification channels -->
-    <string name="zauth_channel_important_name">Zauth important</string>
-    <string name="zauth_channel_important_description">Zauth events that require the user assistance</string>
-    <string name="zauth_channel_info_name">Zauth informative</string>
-    <string name="zauth_channel_info_description">Informative Zauth events</string>
+    <string name="auth41_channel_important_name">Auth41 important</string>
+    <string name="auth41_channel_important_description">Auth41 events that require the user assistance</string>
+    <string name="auth41_channel_info_name">Auth41 informative</string>
+    <string name="auth41_channel_info_description">Informative Auth41 events</string>
 
-    <string name="zauth_notification_auth_needed_title">FreeOTP Zauth - Authentication required</string>
-    <string name="zauth_notification_auth_needed_message">Please verify your identity to respond to a Zauth authentication request for %1$s</string>
-    <string name="zauth_notification_invalidated_title">FreeOTP - Key invalidated!</string>
-    <string name="zauth_notification_invalidated_message">The key for token %1$s has been invalidated by the Android Key Store. This may have been due to a change in your lock screen settings. The token has been removed. Please contact your token provider.</string>
-    <string name="zauth_notification_invalid_token_title">FreeOTP Zauth - invalid token</string>
-    <string name="zauth_notification_invalid_token_message">A Zauth request was received for token %1$s, but that token does not allow Zauth</string>
-    <string name="zauth_notification_failed_title">FreeOTP Zauth - network failure!</string>
-    <string name="zauth_notification_failed_message">The Zauth server for %1$s could not be contacted. You might need to go online, check the Zauth Token and/or the respective IdP server configuration. Error details: %2$s</string>
-    <string name="zauth_notification_failed_message_http">The Zauth server for %1$s responded with HTTP %2$d. Check the Zauth Token and/or the respective IdP server configuration.</string>
-    <string name="zauth_notification_invalid_url_title">FreeOTP Zauth - token error!</string>
-    <string name="zauth_notification_invalid_url_message">The Zauth URL for token %1$s is invalid.</string>
-    <string name="zauth_notification_success">FreeOTP Zauth</string>
-    <string name="zauth_notification_success_message">Zauth success for %s</string>
-    <string name="zauth_notification_registration_success_message">Zauth device registration success for %s</string>
-    <string name="zauth_notification_registration_failed_title">FreeOTP Zauth - device registration failed!</string>
-    <string name="zauth_notification_registration_failed_message">The Zauth server for %1$s could not be contacted! Please contact the IdP server administrator, or retry the procedure. Error details: %2$s</string>
-    <string name="zauth_notification_registration_failed_message_http">The Zauth server for %1$s refused device registration (HTTP code %2$d). Please contact the IdP server administrator, or retry the procedure.</string>
+    <string name="auth41_notification_auth_needed_title">FreeOTP Auth41 - Authentication required</string>
+    <string name="auth41_notification_auth_needed_message">Please verify your identity to respond to a Auth41 authentication request for %1$s</string>
+    <string name="auth41_notification_invalidated_title">FreeOTP - Key invalidated!</string>
+    <string name="auth41_notification_invalidated_message">The key for token %1$s has been invalidated by the Android Key Store. This may have been due to a change in your lock screen settings. The token has been removed. Please contact your token provider.</string>
+    <string name="auth41_notification_invalid_token_title">FreeOTP Auth41 - invalid token</string>
+    <string name="auth41_notification_invalid_token_message">A Auth41 request was received for token %1$s, but that token does not allow Auth41</string>
+    <string name="auth41_notification_failed_title">FreeOTP Auth41 - network failure!</string>
+    <string name="auth41_notification_failed_message">The Auth41 server for %1$s could not be contacted. You might need to go online, check the Auth41 Token and/or the respective IdP server configuration. Error details: %2$s</string>
+    <string name="auth41_notification_failed_message_http">The Auth41 server for %1$s responded with HTTP %2$d. Check the Auth41 Token and/or the respective IdP server configuration.</string>
+    <string name="auth41_notification_invalid_url_title">FreeOTP Auth41 - token error!</string>
+    <string name="auth41_notification_invalid_url_message">The Auth41 URL for token %1$s is invalid.</string>
+    <string name="auth41_notification_success">FreeOTP Auth41</string>
+    <string name="auth41_notification_success_message">Auth41 success for %s</string>
+    <string name="auth41_notification_registration_success_message">Auth41 device registration success for %s</string>
+    <string name="auth41_notification_registration_failed_title">FreeOTP Auth41 - device registration failed!</string>
+    <string name="auth41_notification_registration_failed_message">The Auth41 server for %1$s could not be contacted! Please contact the IdP server administrator, or retry the procedure. Error details: %2$s</string>
+    <string name="auth41_notification_registration_failed_message_http">The Auth41 server for %1$s refused device registration (HTTP code %2$d). Please contact the IdP server administrator, or retry the procedure.</string>
 
     <!-- Strings for the password activity. -->
     <string name="password">Password</string>
@@ -130,8 +130,8 @@
     <string name="manual_button_digits_eight">8</string>
     <string name="manual_algorithm">Algorithm</string>
     <string name="manual_interval">Interval</string>
-    <string name="manual_zauth_url_text">ZAuth URL</string>
-    <string name="manual_zauth_url_hint">https://auth.example.com/api/zauth</string>
+    <string name="manual_auth41_url_text">Auth41 URL</string>
+    <string name="manual_auth41_url_hint">https://auth.example.com/api/auth41</string>
     <string name="manual_add_token">Add Token</string>
     <string name="manual_accessibility_algorithm">Token algorithm</string>
     <string name="manual_accessibility_interval">Token Interval</string>

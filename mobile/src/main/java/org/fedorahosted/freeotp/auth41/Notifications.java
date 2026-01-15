@@ -1,4 +1,4 @@
-package org.fedorahosted.freeotp.zauth;
+package org.fedorahosted.freeotp.auth41;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -16,22 +16,22 @@ import static androidx.core.content.ContextCompat.getSystemService;
 
 public class Notifications {
 
-    public static final String ZAUTH_CHANNEL_ID_URGENT = "org.fedorahosted.freeotp.zauth.urgent";
-    public static final String ZAUTH_CHANNEL_ID_INFO = "org.fedorahosted.freeotp.zauth.info";
+    public static final String AUTH41_CHANNEL_ID_URGENT = "org.fedorahosted.freeotp.auth41.urgent";
+    public static final String AUTH41_CHANNEL_ID_INFO = "org.fedorahosted.freeotp.auth41.info";
 
     public static void createNotificationChannels(Context context) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is not in the Support Library.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel urgentChannel = new NotificationChannel(ZAUTH_CHANNEL_ID_URGENT,
-                    context.getString(R.string.zauth_channel_important_name),
+            NotificationChannel urgentChannel = new NotificationChannel(AUTH41_CHANNEL_ID_URGENT,
+                    context.getString(R.string.auth41_channel_important_name),
                     NotificationManager.IMPORTANCE_HIGH);
-            urgentChannel.setDescription(context.getString(R.string.zauth_channel_important_description));
+            urgentChannel.setDescription(context.getString(R.string.auth41_channel_important_description));
 
-            NotificationChannel infoChannel = new NotificationChannel(ZAUTH_CHANNEL_ID_INFO,
-                    context.getString(R.string.zauth_channel_info_name),
+            NotificationChannel infoChannel = new NotificationChannel(AUTH41_CHANNEL_ID_INFO,
+                    context.getString(R.string.auth41_channel_info_name),
                     NotificationManager.IMPORTANCE_MIN);
-            infoChannel.setDescription(context.getString(R.string.zauth_channel_info_description));
+            infoChannel.setDescription(context.getString(R.string.auth41_channel_info_description));
 
             NotificationManager notificationManager = getSystemService(context, NotificationManager.class);
             // TODO: do we check for null?

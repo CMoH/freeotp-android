@@ -1,9 +1,9 @@
-package org.fedorahosted.freeotp.zauth;
+package org.fedorahosted.freeotp.auth41;
 
 /**
  * Protocol bean.
  */
-public class ZauthChallengeResponse {
+public class Auth41ChallengeResponse {
 
     private String otpCode;
     private String selectedCredentialId;
@@ -35,7 +35,7 @@ public class ZauthChallengeResponse {
 
     @Override
     public String toString() {
-        return "ZauthChallengeResponse{" +
+        return "Auth41ChallengeResponse{" +
                 "otpCode='" + otpCode + '\'' +
                 ", selectedCredentialId='" + selectedCredentialId + '\'' +
                 ", signature='" + signature + '\'' +

@@ -85,7 +85,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import org.fedorahosted.freeotp.zauth.FirebaseService;
+import org.fedorahosted.freeotp.auth41.FirebaseService;
 
 public class Activity extends AppCompatActivity
     implements SelectableAdapter.EventListener, View.OnClickListener, View.OnLongClickListener {

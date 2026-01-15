@@ -26,7 +26,7 @@ public class ManualAdd extends AppCompatActivity {
     TextView mAlgorithm;
     Spinner mIntervalSpinner;
     TextView mInterval;
-    TextView mZauthUrl;
+    TextView mAuth41Url;
 
     /* Initialize UI views */
     private void initViews() {
@@ -58,7 +58,7 @@ public class ManualAdd extends AppCompatActivity {
         mTypeGroup = (RadioGroup) findViewById(R.id.radio_grp_type);
         mDigitsGroup = (RadioGroup) findViewById(R.id.radio_grp_digits);
 
-        mZauthUrl = (EditText) findViewById(R.id.edit_text_zauth_url);
+        mAuth41Url = (EditText) findViewById(R.id.edit_text_auth41_url);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,8 +106,8 @@ public class ManualAdd extends AppCompatActivity {
                 .appendQueryParameter("digits", mDigits.getText().toString())
                 .appendQueryParameter("period", mInterval.getText().toString());
 
-        if (!mZauthUrl.getText().toString().isBlank()) {
-            builder.appendQueryParameter("zauthUrl", mZauthUrl.getText().toString());
+        if (!mAuth41Url.getText().toString().isBlank()) {
+            builder.appendQueryParameter("auth41Url", mAuth41Url.getText().toString());
         }
 
         if (type.equals("hotp")) {
@@ -120,7 +120,7 @@ public class ManualAdd extends AppCompatActivity {
         String secret = mSecret.getText().toString();
         String issuer = mIssuer.getText().toString();
         String account = mAccount.getText().toString();
-        String zauthUrl = mZauthUrl.getText().toString();
+        String auth41Url = mAuth41Url.getText().toString();
         Boolean valid = true;
         String msg = "";
 
@@ -134,13 +134,13 @@ public class ManualAdd extends AppCompatActivity {
             valid = false;
         }
 
-        if (!zauthUrl.isBlank()) {
-            Uri maybeUri = Uri.parse(zauthUrl);
+        if (!auth41Url.isBlank()) {
+            Uri maybeUri = Uri.parse(auth41Url);
             if (!maybeUri.getScheme().equals("https")) {
-                msg = "Zauth url is not https";
+                msg = "Auth41 url is not https";
                 valid = false;
             } else if (maybeUri.getHost().isEmpty()) {
-                msg = "Zauth url host is empty";
+                msg = "Auth41 url host is empty";
                 valid = false;
             }
         }

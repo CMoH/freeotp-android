@@ -1,6 +1,6 @@
-package org.fedorahosted.freeotp.zauth;
+package org.fedorahosted.freeotp.auth41;
 
-public class ZauthDeviceRegistrationRequest {
+public class Auth41DeviceRegistrationRequest {
 
     /**
      * The Firebase device token.
@@ -13,7 +13,7 @@ public class ZauthDeviceRegistrationRequest {
      */
     private String serverCode;
     /**
-     * The ZAuth correlation ID.
+     * The Auth41 correlation ID.
      */
     private String correlationId;
     /**
@@ -69,7 +69,7 @@ public class ZauthDeviceRegistrationRequest {
 
     @Override
     public String toString() {
-        return "ZauthDeviceRegistrationRequest{" +
+        return "Auth41DeviceRegistrationRequest{" +
                 "deviceToken='" + deviceToken + '\'' +
                 ", serverCode='" + serverCode + '\'' +
                 ", correlationId='" + correlationId + '\'' +
